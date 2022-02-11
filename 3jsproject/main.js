@@ -1,6 +1,7 @@
 import './style.css'
 
 import * as THREE from 'three';
+
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 
@@ -10,50 +11,59 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerH
 const renderer = new THREE.WebGLRenderer({
   canvas: document.querySelector('#bg'),
 });
-// instanstiate loader, and use over and over again
-const loader = new THREE.TextureLoader();
-
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 camera.position.setZ(30);
 
 
+// add ring
 const ring = new THREE.TorusGeometry(5, 1, 16, 100);
-const material = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5, metalness: 0.5 });
-const torus = new THREE.Mesh(ring, material);
+const ringMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5, metalness: 0.5 });
+const torus = new THREE.Mesh(ring, ringMaterial);
 scene.add(torus);
 
+// add cube?
+
+
+const color = 0xFFFFFF;
+const near = 30;
+const far = 100;
+scene.fog = new THREE.Fog(color, near, far);
+
+
 // directional light
-const light = new THREE.DirectionalLight(0xfaa1ff, 1); 
+const light = new THREE.DirectionalLight(0xfaa1f3, 1); 
 light.position.set(0, 0, 1);
 scene.add(light);
 
-// directional light
-const light2 = new THREE.DirectionalLight(0xbbbbbb, 1); 
+// directional light 2, uncomment if needed
+/*
+const light2 = new THREE.DirectionalLight(0x1b1bbb, 1); 
 light2.position.set(20, 20, 1);
 scene.add(light2);
-
+*/
 
 //ambient light
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+const ambientLight = new THREE.AmbientLight(color, 0.8);
 scene.add(ambientLight);
+
+// Uncomment to add a grid to the scene:
 /*
-creation of a grid 
 const grid = new THREE.GridHelper(200, 50);
 scene.add(grid);
 */
-
-
+// Controls the scene
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.25;
 controls.enableZoom = true;
 controls.enablePan = true;
 
-
+//Adds a "star"
+const starAmount = 500;
 function addStar() {
   const geometry = new THREE.SphereGeometry(0.25, 24, 24);
-  const material = new THREE.MeshStandardMaterial({ color: 0xfaafff});
+  const material = new THREE.MeshStandardMaterial({ color: 0xffff});
   const star = new THREE.Mesh(geometry, material);
 
   const [x, y, z] = Array(3).fill().map(() => THREE.MathUtils.randFloatSpread(150));
@@ -61,27 +71,22 @@ function addStar() {
   star.position.set(x, y, z);
   scene.add(star);
 }
-Array(500).fill().forEach(addStar);
+// Adds "starAmount" of Stars
+Array(starAmount).fill().forEach(addStar);
 
-const spaceTexture = new loader.load('./pics/download.jpg');
-scene.background = spaceTexture;
+// for resizing the canvas when the window changes:
+window.addEventListener( 'resize', onWindowResize, false );
 
+function onWindowResize(){
 
-function moveCamera() {
-  const t = document.body.getBoundingClientRect().top;
-  
-  camera.position.z = t * .1;
-  camera.position.x = t * -.001;
-  camera.position.y = t * .02;
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize( window.innerWidth, window.innerHeight );
 
 }
-document.body.onscroll = moveCamera();
-moveCamera();
 
-
-
-
-
+// animations
 function animate() {
   requestAnimationFrame(animate);
   torus.rotation.x += 0.01;
