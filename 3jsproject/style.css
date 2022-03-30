@@ -5,16 +5,20 @@ canvas{
 }
 main{
   position: absolute;
+  width: 100%;
+  height: 100%;
+
+  display: grid;
 }
 
-h1{
+h1, h2, h3, h4, h5, h6{
   color:deeppink;
   font: 100;
   size: 30px;
 }
 
 
-#project{
+#bg{
   color: aliceblue;
   font: 500;
   size: 20;
